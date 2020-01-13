@@ -494,12 +494,15 @@ export class Game extends React.Component<IGameProps, IGameState> {
 
   handleClick(i: number){
     var clicked_piece: number = this.state.clicked_piece;
+    const turn = this.state.turn;
     // 持ち駒をクリックしたとき
     if(i < Setting.WHITE * 2){
       if(clicked_piece === Setting.UNCLICKED){
-        this.setState({
-          clicked_piece: i,
-        });
+        if((turn ? i < Setting.WHITE : i>=Setting.WHITE)){
+          this.setState({
+            clicked_piece: i,
+          });
+        }
         return;
       }
       this.setState({
@@ -512,7 +515,6 @@ export class Game extends React.Component<IGameProps, IGameState> {
     let x: number = Math.floor((i - Setting.WHITE * 2) / Setting.LENGTH);
     let y: number = (i - Setting.WHITE * 2) % Setting.LENGTH;
     const current_pos = this.state.current_pos.concat();
-    const turn = this.state.turn;
     // 駒を掴んでないとき
     if(this.state.clicked_piece === Setting.UNCLICKED){
       // 手番の駒以外はダメ

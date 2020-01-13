@@ -1,12 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import {Setting} from "./setting";
+import {Game, make_board, set_kifu, set_pieces} from './game';
+// import { Piece } from './pieces/piece';
 
-ReactDOM.render(<App />, document.getElementById('root'));
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+ReactDOM.render(
+  <Game
+    start_pos={make_board()}
+    start_black_piece={set_pieces()}
+    start_white_piece={set_pieces()}
+    current_pos={make_board()}
+    current_black_piece={set_pieces()}
+    current_white_piece={set_pieces()}
+    kifu={set_kifu()}
+    turn={true}
+    moves={0}
+    clicked_piece={Setting.UNCLICKED}
+    final_piece={Setting.UNCLICKED}
+  />,
+  document.getElementById('root')
+);

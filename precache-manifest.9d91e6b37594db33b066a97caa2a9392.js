@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "593c0a3bdbc4bfead9908bf809f72e56",
+    "revision": "c858e3104d9d2dd9b2b26ac73dcf9f7d",
     "url": "/react-shogi/index.html"
   },
   {

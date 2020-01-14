@@ -4,7 +4,7 @@
 
 [このページ](https://izumo27.github.io/react-shogi/)で遊ぶことができます。
 
-react.jsを使って実装しています。
+React.jsを使って実装しています。
 
 ![](/public/screenshot.png)
 

@@ -671,8 +671,11 @@ export class Game extends React.Component<IGameProps, IGameState> {
   }
 
   resign(){
+    const moves: number = this.state.moves;
+    if(moves < 0){
+      return;
+    }
     if(window.confirm("投了しますか？")) {
-      const moves: number = this.state.moves;
       setTimeout(() => {
         alert("まで" + (moves) + "手にて" + (this.state.turn ? "後手" : "先手") + "の勝ちです！")
       }, 200);

@@ -18,6 +18,9 @@ ReactDOM.render(
     moves={0}
     clicked_piece={Setting.UNCLICKED}
     final_piece={Setting.UNCLICKED}
+    black_name={""}
+    white_name={""}
+    is_black={true}
   />,
   document.getElementById('root')
 );

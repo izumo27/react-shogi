@@ -451,6 +451,9 @@ interface IGameProps {
   moves: number;
   clicked_piece: number;
   final_piece: number;
+  black_name: string;
+  white_name: string;
+  is_black: boolean;
 }
 
 interface IGameState {
@@ -472,6 +475,12 @@ interface IGameState {
   clicked_piece: number;
   // 最後に動かした駒
   final_piece: number;
+  // 先手の名前
+  black_name: string;
+  // 後手の名前
+  white_name: string;
+  // 自分が先手かどうか
+  is_black: boolean;
 }
 
 export class Game extends React.Component<IGameProps, IGameState> {
@@ -489,10 +498,16 @@ export class Game extends React.Component<IGameProps, IGameState> {
       moves: 0,
       clicked_piece: Setting.UNCLICKED,
       final_piece: Setting.UNCLICKED,
+      black_name: "先手",
+      white_name: "後手",
+      is_black: true,
     };
   }
 
   handleClick(i: number){
+    if(this.state.moves < 0){
+      return;
+    }
     var clicked_piece: number = this.state.clicked_piece;
     const turn = this.state.turn;
     // 持ち駒をクリックしたとき
@@ -637,6 +652,9 @@ export class Game extends React.Component<IGameProps, IGameState> {
         setTimeout(() => {
           alert("反則（二歩）により" + moves + "手にて" + (turn ? "後手" : "先手") + "の勝ちです！")
         }, 200);
+        this.setState({
+          moves: -1,
+        });
         return;
       }
     }
@@ -645,42 +663,66 @@ export class Game extends React.Component<IGameProps, IGameState> {
       setTimeout(() => {
         alert("まで" + (moves + 1) + "手にて" + (turn ? "先手": "後手") + "の勝ちです！")
       }, 200);
+      this.setState({
+        moves: -1,
+      });
+      return;
+    }
+  }
+
+  resign(){
+    if(window.confirm("投了しますか？")) {
+      const moves: number = this.state.moves;
+      setTimeout(() => {
+        alert("まで" + (moves) + "手にて" + (this.state.turn ? "後手" : "先手") + "の勝ちです！")
+      }, 200);
+      this.setState({
+        moves: -1,
+      });
       return;
     }
   }
 
   render() {
-    const current_pos = this.state.current_pos;
+    let game: string = "game";
+    if(!this.state.is_black){
+      game += " white";
+    }
     return (
       <div className="game">
-        <div className="game-info-white white">
-          <div>{"△"}</div>
-          <Captured
-            squares={this.state.current_white_piece}
-            clicked_piece={this.state.clicked_piece}
-            is_black={false}
-            turn={this.state.turn}
-            onClick={i => this.handleClick(i)}
-          />
+        <div className={game}>
+          <div className="game-info-white white">
+            <div>{"△" + this.state.white_name}</div>
+            <Captured
+              squares={this.state.current_white_piece}
+              clicked_piece={this.state.clicked_piece}
+              is_black={false}
+              turn={this.state.turn}
+              onClick={i => this.handleClick(i)}
+            />
+          </div>
+          <div className="game-board">
+            <Board
+              squares={this.state.current_pos}
+              onClick={i => this.handleClick(i)}
+              clicked_piece={this.state.clicked_piece}
+              final_piece={this.state.final_piece}
+            />
+          </div>
+          <div className="game-info-black">
+            <div>{"▲" + this.state.black_name}</div>
+            <Captured
+              squares={this.state.current_black_piece}
+              clicked_piece={this.state.clicked_piece}
+              is_black={true}
+              turn={this.state.turn}
+              onClick={i => this.handleClick(i)}
+            />
+          </div>
         </div>
-        <div className="game-board">
-          <Board
-            squares={current_pos}
-            onClick={i => this.handleClick(i)}
-            clicked_piece={this.state.clicked_piece}
-            final_piece={this.state.final_piece}
-          />
-        </div>
-        <div className="game-info-black">
-          <div>{"▲"}</div>
-          <Captured
-            squares={this.state.current_black_piece}
-            clicked_piece={this.state.clicked_piece}
-            is_black={true}
-            turn={this.state.turn}
-            onClick={i => this.handleClick(i)}
-          />
-        </div>
+        <button className={"status"} onClick={() => this.resign()}>
+          {"投了"}
+        </button>
       </div>
     );
   }

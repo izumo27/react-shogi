@@ -686,45 +686,61 @@ export class Game extends React.Component<IGameProps, IGameState> {
     }
   }
 
+  rotate(){
+    this.setState({
+      is_black: !this.state.is_black,
+    });
+    return;
+  }
+
   render() {
-    let game: string = "game";
+    let game: string = "game-info";
     if(!this.state.is_black){
       game += " white";
     }
+    let moves = this.state.moves;
     return (
-      <div className="game">
-        <div className={game}>
-          <div className="game-info-white white">
-            <div>{"△" + this.state.white_name}</div>
-            <Captured
-              squares={this.state.current_white_piece}
-              clicked_piece={this.state.clicked_piece}
-              is_black={false}
-              turn={this.state.turn}
-              onClick={i => this.handleClick(i)}
-            />
+      <div className="game-info">
+        <div className="game">
+          <div className="center bold">
+            {"△" + this.state.white_name + "　" + moves + "手目" + "　" + "▲" + this.state.black_name}
           </div>
-          <div className="game-board">
-            <Board
-              squares={this.state.current_pos}
-              onClick={i => this.handleClick(i)}
-              clicked_piece={this.state.clicked_piece}
-              final_piece={this.state.final_piece}
-            />
-          </div>
-          <div className="game-info-black">
-            <div>{"▲" + this.state.black_name}</div>
-            <Captured
-              squares={this.state.current_black_piece}
-              clicked_piece={this.state.clicked_piece}
-              is_black={true}
-              turn={this.state.turn}
-              onClick={i => this.handleClick(i)}
-            />
+          <div className={game}>
+            <div className="game-info-white white">
+              <div>{"△"}</div>
+              <Captured
+                squares={this.state.current_white_piece}
+                clicked_piece={this.state.clicked_piece}
+                is_black={false}
+                turn={this.state.turn}
+                onClick={i => this.handleClick(i)}
+              />
+            </div>
+            <div className="game-board">
+              <Board
+                squares={this.state.current_pos}
+                onClick={i => this.handleClick(i)}
+                clicked_piece={this.state.clicked_piece}
+                final_piece={this.state.final_piece}
+              />
+            </div>
+            <div className="game-info-black">
+              <div>{"▲"}</div>
+              <Captured
+                squares={this.state.current_black_piece}
+                clicked_piece={this.state.clicked_piece}
+                is_black={true}
+                turn={this.state.turn}
+                onClick={i => this.handleClick(i)}
+              />
+            </div>
           </div>
         </div>
         <button className={"status"} onClick={() => this.resign()}>
           {"投了"}
+        </button>
+        <button className={"status"} onClick={() => this.rotate()} >
+          {"反転"}
         </button>
       </div>
     );

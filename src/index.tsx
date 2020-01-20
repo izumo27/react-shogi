@@ -18,8 +18,8 @@ ReactDOM.render(
     moves={0}
     clicked_piece={Setting.UNCLICKED}
     final_piece={Setting.UNCLICKED}
-    black_name={""}
-    white_name={""}
+    black_name={"後手"}
+    white_name={"先手"}
     is_black={true}
   />,
   document.getElementById('root')

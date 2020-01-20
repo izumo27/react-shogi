@@ -487,20 +487,20 @@ export class Game extends React.Component<IGameProps, IGameState> {
   constructor(props: IGameProps){
     super(props);
     this.state = {
-      start_pos: make_board(),
-      start_black_piece: set_pieces(),
-      start_white_piece: set_pieces(),
-      current_pos: make_board(),
-      current_black_piece: set_pieces(),
-      current_white_piece: set_pieces(),
-      kifu: set_kifu(),
-      turn: true,
-      moves: 0,
-      clicked_piece: Setting.UNCLICKED,
-      final_piece: Setting.UNCLICKED,
-      black_name: "先手",
-      white_name: "後手",
-      is_black: true,
+      start_pos: this.props.start_pos,
+      start_black_piece: this.props.start_black_piece,
+      start_white_piece: this.props.start_white_piece,
+      current_pos: this.props.current_pos,
+      current_black_piece: this.props.current_black_piece,
+      current_white_piece: this.props.current_white_piece,
+      kifu: this.props.kifu,
+      turn: this.props.turn,
+      moves: this.props.moves,
+      clicked_piece: this.props.clicked_piece,
+      final_piece: this.props.final_piece,
+      black_name: this.props.black_name,
+      white_name: this.props.white_name,
+      is_black: this.props.is_black,
     };
   }
 
@@ -736,11 +736,11 @@ export class Game extends React.Component<IGameProps, IGameState> {
             </div>
           </div>
         </div>
-        <button className={"status"} onClick={() => this.resign()}>
-          {"投了"}
-        </button>
         <button className={"status"} onClick={() => this.rotate()} >
           {"反転"}
+        </button>
+        <button className={"status"} onClick={() => this.resign()}>
+          {"投了"}
         </button>
       </div>
     );

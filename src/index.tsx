@@ -16,6 +16,7 @@ ReactDOM.render(
     kifu={set_kifu()}
     turn={true}
     moves={0}
+    moves_sub={0}
     clicked_piece={Setting.UNCLICKED}
     final_piece={Setting.UNCLICKED}
     black_name={"先手"}

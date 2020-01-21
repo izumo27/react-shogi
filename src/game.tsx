@@ -449,6 +449,7 @@ interface IGameProps {
   kifu: Array<string>;
   turn: boolean;
   moves: number;
+  moves_sub: number;
   clicked_piece: number;
   final_piece: number;
   black_name: string;
@@ -471,6 +472,8 @@ interface IGameState {
   turn: boolean;
   // 手数
   moves: number;
+  // 表示用の手数
+  moves_sub: number;
   // 掴んでいる駒
   clicked_piece: number;
   // 最後に動かした駒
@@ -496,6 +499,7 @@ export class Game extends React.Component<IGameProps, IGameState> {
       kifu: this.props.kifu,
       turn: this.props.turn,
       moves: this.props.moves,
+      moves_sub: this.props.moves_sub,
       clicked_piece: this.props.clicked_piece,
       final_piece: this.props.final_piece,
       black_name: this.props.black_name,
@@ -643,6 +647,7 @@ export class Game extends React.Component<IGameProps, IGameState> {
       current_white_piece: tmp_white_piece,
       turn: !turn,
       moves: moves + 1,
+      moves_sub: moves + 1,
       clicked_piece: Setting.UNCLICKED,
       final_piece: i,
     });
@@ -698,12 +703,12 @@ export class Game extends React.Component<IGameProps, IGameState> {
     if(!this.state.is_black){
       game += " white";
     }
-    let moves = this.state.moves;
+    let moves = this.state.moves_sub;
     return (
       <div className="game-info">
         <div className="game">
           <div className="center bold">
-            {"△" + this.state.white_name + "　" + moves + "手目" + "　" + "▲" + this.state.black_name}
+            {"△" + this.state.white_name + "　" + moves + "手目　▲" + this.state.black_name}
           </div>
           <div className={game}>
             <div className="game-info-white white">

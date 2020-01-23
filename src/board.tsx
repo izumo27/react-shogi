@@ -25,7 +25,7 @@ interface ISquareState{
 }
 
 function Square(props: ISquareProps){
-  var class_string: string = "";
+  let class_string: string = "";
   if(props.is_captured){
     class_string = "captured";
   }

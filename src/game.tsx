@@ -16,7 +16,7 @@ import {Board, Captured} from './board';
 import _ from 'lodash';
 
 export function make_board(sfen="lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1", language='Ja'): Piece[][]{
-  var squares: Piece[][] = [];
+  let squares: Piece[][] = [];
   for(let i = 0; i < Setting.LENGTH; ++i){
     squares[i] = [];
     for(let j = 0; j < Setting.LENGTH; ++j){
@@ -64,7 +64,7 @@ export function make_board(sfen="lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1
 }
 
 export function set_piece(n: number, is_black: boolean): Piece{
-  var piece: Piece = new Mt();
+  let piece: Piece = new Mt();
   if(n === 0) piece = new Rook(is_black);
   if(n === 1) piece = new Bishop(is_black);
   if(n === 2) piece = new Gold(is_black);
@@ -76,12 +76,12 @@ export function set_piece(n: number, is_black: boolean): Piece{
 }
 
 export function set_pieces(): number[]{
-  var numbers: number[] = new Array<number>(Setting.WHITE).fill(0);
+  let numbers: number[] = new Array<number>(Setting.WHITE).fill(0);
   return numbers;
 }
 
 export function set_kifu(): Array<string>{
-  var kifu: Array<string> = [];
+  let kifu: Array<string> = [];
   return kifu;
 }
 
@@ -512,7 +512,7 @@ export class Game extends React.Component<IGameProps, IGameState> {
     if(this.state.moves < 0){
       return;
     }
-    var clicked_piece: number = this.state.clicked_piece;
+    let clicked_piece: number = this.state.clicked_piece;
     const turn = this.state.turn;
     // 持ち駒をクリックしたとき
     if(i < Setting.WHITE * 2){
@@ -559,11 +559,11 @@ export class Game extends React.Component<IGameProps, IGameState> {
     const current_black_piece = _.cloneDeep(this.state.current_black_piece);
     const current_white_piece = _.cloneDeep(this.state.current_white_piece);
     const moves = this.state.moves;
-    var tmp_pos = _.cloneDeep(current_pos);  // 動かした後の盤面
-    var tmp_black_piece = _.cloneDeep(current_black_piece);
-    var tmp_white_piece = _.cloneDeep(current_white_piece);
-    var xx: number = -1;
-    var yy: number = -1;
+    let tmp_pos = _.cloneDeep(current_pos);  // 動かした後の盤面
+    let tmp_black_piece = _.cloneDeep(current_black_piece);
+    let tmp_white_piece = _.cloneDeep(current_white_piece);
+    let xx: number = -1;
+    let yy: number = -1;
     // 持ち駒を掴んでいるとき
     if(clicked_piece < Setting.WHITE * 2){
       // 空きマスでないとダメ
@@ -592,7 +592,7 @@ export class Game extends React.Component<IGameProps, IGameState> {
       // 持ち駒の分を引く
       xx = Math.floor((clicked_piece - Setting.WHITE * 2) / Setting.LENGTH);
       yy = (clicked_piece- Setting.WHITE * 2) % Setting.LENGTH;
-      var piece = tmp_pos[x][y];
+      let piece = tmp_pos[x][y];
       // 盤面の更新
       tmp_pos[x][y] = tmp_pos[xx][yy];
       tmp_pos[xx][yy] = new Mt();

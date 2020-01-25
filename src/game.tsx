@@ -655,7 +655,7 @@ export class Game extends React.Component<IGameProps, IGameState> {
     if(xx === -1 && tmp_pos[x][y].piece_num() === 6){
       if(nifu(tmp_pos, x, turn)){
         setTimeout(() => {
-          alert("反則（二歩）により" + moves + "手にて" + (turn ? this.state.white_name : this.state.black_name) + "の勝ちです！")
+          alert(`反則（二歩）により${moves}手にて${(turn ? this.state.white_name : this.state.black_name)}の勝ちです！`);
         }, 200);
         this.setState({
           moves: -1,
@@ -666,7 +666,7 @@ export class Game extends React.Component<IGameProps, IGameState> {
     // 詰んでいたら対局終了
     if(mate(tmp_pos, (turn ? tmp_white_piece : tmp_black_piece), !turn)){
       setTimeout(() => {
-        alert("まで" + (moves + 1) + "手にて" + (turn ? this.state.black_name : this.state.white_name) + "の勝ちです！")
+        alert(`まで${(moves + 1)}手にて${(turn ? this.state.black_name : this.state.white_name)}の勝ちです！`);
       }, 200);
       this.setState({
         moves: -1,
@@ -682,7 +682,7 @@ export class Game extends React.Component<IGameProps, IGameState> {
     }
     if(window.confirm("投了しますか？")) {
       setTimeout(() => {
-        alert("まで" + (moves) + "手にて" + (this.state.turn ? this.state.white_name : this.state.black_name) + "の勝ちです！")
+        alert(`まで${(moves)}手にて${(this.state.turn ? this.state.white_name : this.state.black_name)}の勝ちです！`);
       }, 200);
       this.setState({
         moves: -1,
@@ -708,7 +708,7 @@ export class Game extends React.Component<IGameProps, IGameState> {
       <div className="game-info">
         <div className="game">
           <div className="center bold">
-            {"△" + this.state.white_name + "　" + moves + "手目　▲" + this.state.black_name}
+            {`△${this.state.white_name}　${moves}手目　▲${this.state.black_name}`}
           </div>
           <div className={game}>
             <div className="game-info-white white">

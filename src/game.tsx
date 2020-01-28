@@ -85,6 +85,14 @@ export function set_kifu(): Array<string>{
   return kifu;
 }
 
+export function set_control_piece(flag: boolean = false): boolean[][]{
+  let control_piece: boolean[][] = [];
+  for(let i = 0; i < Setting.LENGTH; ++i){
+    control_piece[i] = new Array<boolean>(Setting.LENGTH).fill(flag);
+  }
+  return control_piece;
+}
+
 // ある駒の利きを列挙
 // 手番の駒のマスは移動するときにはじいているため、ここではそのマスも利きに入れてしまう
 // ただし飛び道具はすり抜けしないために正しい効きを列挙する
@@ -446,6 +454,7 @@ interface IGameProps {
   current_pos: Piece[][];
   current_black_piece: number[];
   current_white_piece: number[];
+  control_piece: boolean[][];
   kifu: Array<string>;
   turn: boolean;
   moves: number;
@@ -466,6 +475,8 @@ interface IGameState {
   current_pos: Piece[][];
   current_black_piece: number[];
   current_white_piece: number[];
+  // 指し手の候補
+  control_piece: boolean[][];
   // 棋譜
   kifu: Array<string>;
   // 先手番かどうか
@@ -496,6 +507,7 @@ export class Game extends React.Component<IGameProps, IGameState> {
       current_pos: this.props.current_pos,
       current_black_piece: this.props.current_black_piece,
       current_white_piece: this.props.current_white_piece,
+      control_piece: this.props.control_piece,
       kifu: this.props.kifu,
       turn: this.props.turn,
       moves: this.props.moves,
@@ -514,11 +526,54 @@ export class Game extends React.Component<IGameProps, IGameState> {
     }
     let clicked_piece: number = this.state.clicked_piece;
     const turn = this.state.turn;
+    let tmp_pos = _.cloneDeep(this.state.current_pos);  // 動かした後の盤面
+    const current_black_piece = _.cloneDeep(this.state.current_black_piece);
+    const current_white_piece = _.cloneDeep(this.state.current_white_piece);
     // 持ち駒をクリックしたとき
     if(i < Setting.WHITE * 2){
       if(clicked_piece === Setting.UNCLICKED){
-        if((turn ? i < Setting.WHITE : i>=Setting.WHITE)){
+        if((turn ? (i < Setting.WHITE && current_black_piece[i] > 0) : (i >= Setting.WHITE && current_white_piece[i - Setting.WHITE] > 0))){
+          // 候補の列挙
+          // 駒を打つときは王手がかかっていないかと、行き所がないか、二歩、打ち歩詰めをチェックする
+          let tmp_control_piece = set_control_piece(true);
+          let num = (i >= Setting.WHITE ? i - Setting.WHITE : i);
+          for(let x = 0; x < Setting.LENGTH; ++x){
+            for(let y = 0; y < Setting.LENGTH; ++y){
+              // 駒がある場所は置けない
+              if(tmp_pos[x][y].piece_num() !== Setting.MT){
+                tmp_control_piece[x][y] = false;
+              }
+              else if(num === 4){
+                tmp_control_piece[x][y] = (turn ? y > 1 : y < Setting.LENGTH - 1 - 1);
+              }
+              else if(num === 5){
+                tmp_control_piece[x][y] = (turn ? y !== 0 : y !== Setting.LENGTH - 1);
+              }
+              else if(num === 6){
+                tmp_control_piece[x][y] = (turn ? y !== 0 : y !== Setting.LENGTH - 1);
+                tmp_pos[x][y] = set_piece(num, turn);
+                if(nifu(tmp_pos, x, turn)){
+                  tmp_control_piece[x][y] = false;
+                }
+                // 打ち歩詰めかどうか
+                // 前に敵玉がいるときだけチェックすればよい
+                if((turn ? (y > 1 && tmp_pos[x][y - 1].piece_num() === 7 && tmp_pos[x][y - 1].turn() !== turn) : (y < Setting.LENGTH - 1 && tmp_pos[x][y + 1].piece_num() === 7 && tmp_pos[x][y + 1].turn() !== turn))){
+                  if(mate(tmp_pos, (turn ? current_white_piece : current_black_piece), !turn)){
+                    tmp_control_piece[x][y] = false;
+                  }
+                }
+                // 盤面を戻す
+                tmp_pos[x][y] = new Mt();
+              }
+              if(tmp_control_piece[x][y]){
+                tmp_pos[x][y] = set_piece(num, turn);
+                tmp_control_piece[x][y] = !check(tmp_pos, (turn ? current_white_piece : current_black_piece), turn);
+                tmp_pos[x][y] = new Mt();
+              }
+            }
+          }
           this.setState({
+            control_piece: tmp_control_piece,
             clicked_piece: i,
           });
         }
@@ -526,6 +581,7 @@ export class Game extends React.Component<IGameProps, IGameState> {
       }
       this.setState({
         clicked_piece: Setting.UNCLICKED,
+        control_piece: set_control_piece(),
       });
       return;
     }
@@ -540,39 +596,55 @@ export class Game extends React.Component<IGameProps, IGameState> {
       if(current_pos[x][y].piece_num() === Setting.MT || current_pos[x][y].turn() !== turn){
         return;
       }
+      // 候補の列挙
+      // 王手がかかっていないかのみをチャックすればよい
+      // 駒を成らないので候補に行き所がない駒が含まれることもあるが、チェックする必要はない
+      // これは適切な移動ならば行き所のない駒はできないため
+      let tmp_control_pos = control_pos(current_pos, turn, x, y, -1, -1, false);
+      let tmp_control_piece = set_control_piece(false);
+      for(let xx = 0; xx < Setting.LENGTH; ++xx){
+        for(let yy = 0; yy < Setting.LENGTH; ++yy){
+          if(tmp_control_pos[xx][yy] === 0){
+            continue;
+          }
+          // 手番の駒はダメ
+          if(current_pos[xx][yy].piece_num() !== Setting.MT && current_pos[xx][yy].turn() === turn){
+            continue;
+          }
+          let piece = tmp_pos[xx][yy];
+          tmp_pos[xx][yy] = tmp_pos[x][y];
+          tmp_pos[x][y] = new Mt();
+          tmp_control_piece[xx][yy] = (check(tmp_pos, (turn ? current_black_piece : current_white_piece), turn) === 0);
+          tmp_pos[x][y] = tmp_pos[xx][yy];
+          tmp_pos[xx][yy] = piece;
+        }
+      }
       this.setState({
+        control_piece: tmp_control_piece,
         clicked_piece: i,
       });
       return;
     }
 
-    // 手番の駒はダメ
     // ここでは必ず盤面をクリックしている
-    if(current_pos[x][y].piece_num() !== Setting.MT && current_pos[x][y].turn() === turn){
+    let current_control_piece = this.state.control_piece;
+    // 候補になかったらダメ
+    if(!current_control_piece[x][y]){
       this.setState({
+        control_piece: set_control_piece(),
         clicked_piece: Setting.UNCLICKED,
       });
       return;
     }
 
-    // 以下では敵の駒か空きマスをクリックしている
-    const current_black_piece = _.cloneDeep(this.state.current_black_piece);
-    const current_white_piece = _.cloneDeep(this.state.current_white_piece);
+    // 以下では正しい指し手であることが保証されている
     const moves = this.state.moves;
-    let tmp_pos = _.cloneDeep(current_pos);  // 動かした後の盤面
     let tmp_black_piece = _.cloneDeep(current_black_piece);
     let tmp_white_piece = _.cloneDeep(current_white_piece);
     let xx: number = -1;
     let yy: number = -1;
     // 持ち駒を掴んでいるとき
     if(clicked_piece < Setting.WHITE * 2){
-      // 空きマスでないとダメ
-      if(current_pos[x][y].piece_num() !== Setting.MT){
-        this.setState({
-          clicked_piece: Setting.UNCLICKED,
-        });
-        return;
-      }
       // 先手の駒を掴んでいる場合
       // 掴むときに手番かチェックしているので、ここではチェックしなくてよい
       if(turn){
@@ -607,15 +679,6 @@ export class Game extends React.Component<IGameProps, IGameState> {
       }
     }
 
-    // 合法手か（動けるところか、王手がかからないか）
-    // 移動した駒は成っていないので行き所がないこともあるが、行き所がないか駒を打つときのみチェックする
-    // これは適切な移動ならば行き所のない駒はできないため
-    if(!can_move(current_pos, tmp_pos, (turn ? tmp_white_piece : tmp_black_piece), xx, yy, x, y, turn) || check(tmp_pos, (turn ? tmp_black_piece : tmp_white_piece), turn) !== 0){
-      this.setState({
-        clicked_piece: Setting.UNCLICKED,
-      });
-      return;
-    }
     // 成れるときは聞く
     // 条件：盤面から3段目に移動または3段目から移動するときで、金と玉以外の成っていない駒のとき
     let num: number = tmp_pos[x][y].piece_num();
@@ -645,24 +708,13 @@ export class Game extends React.Component<IGameProps, IGameState> {
       current_pos: tmp_pos,
       current_black_piece: tmp_black_piece,
       current_white_piece: tmp_white_piece,
+      control_piece: set_control_piece(),
       turn: !turn,
       moves: moves + 1,
       moves_sub: moves + 1,
       clicked_piece: Setting.UNCLICKED,
       final_piece: i,
     });
-    // 二歩は負け
-    if(xx === -1 && tmp_pos[x][y].piece_num() === 6){
-      if(nifu(tmp_pos, x, turn)){
-        setTimeout(() => {
-          alert(`反則（二歩）により${moves}手にて${(turn ? this.state.white_name : this.state.black_name)}の勝ちです！`);
-        }, 200);
-        this.setState({
-          moves: -1,
-        });
-        return;
-      }
-    }
     // 詰んでいたら対局終了
     if(mate(tmp_pos, (turn ? tmp_white_piece : tmp_black_piece), !turn)){
       setTimeout(() => {
@@ -726,6 +778,7 @@ export class Game extends React.Component<IGameProps, IGameState> {
                 squares={this.state.current_pos}
                 onClick={i => this.handleClick(i)}
                 clicked_piece={this.state.clicked_piece}
+                control_piece={this.state.control_piece}
                 final_piece={this.state.final_piece}
               />
             </div>

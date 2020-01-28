@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import {Setting} from "./setting";
-import {Game, make_board, set_kifu, set_pieces} from './game';
+import {Game, make_board, set_kifu, set_pieces, set_control_piece} from './game';
 // import { Piece } from './pieces/piece';
 
 ReactDOM.render(
@@ -13,6 +13,7 @@ ReactDOM.render(
     current_pos={make_board()}
     current_black_piece={set_pieces()}
     current_white_piece={set_pieces()}
+    control_piece={set_control_piece()}
     kifu={set_kifu()}
     turn={true}
     moves={0}

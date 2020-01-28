@@ -64,11 +64,11 @@ ol, ul {
 }
 
 .click{
-  background: rgb(238, 177, 102);
+  background: rgb(240, 211, 175);
 }
 
 .attack{
-  background: rgb(240, 211, 175);
+  background: rgb(224, 161, 90);
 }
 
 .square:focus {

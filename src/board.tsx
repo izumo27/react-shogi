@@ -13,15 +13,8 @@ interface ISquareProps{
   value: string;
   is_black: boolean;
   is_captured: boolean;
+  can_control: boolean;
   onClick: () => void;
-}
-
-interface ISquareState{
-  is_final: boolean;
-  is_clicked: boolean;
-  value: string;
-  is_black: boolean;
-  is_captured: boolean;
 }
 
 function Square(props: ISquareProps){
@@ -39,6 +32,9 @@ function Square(props: ISquareProps){
     class_string = class_string + " final";
   }
   if(props.is_clicked){
+    class_string = class_string + " click";
+  }
+  if(props.can_control){
     class_string = class_string + " attack";
   }
   return (
@@ -55,6 +51,7 @@ interface IBoardProps {
   squares: Piece[][];
   onClick: (i: number) => void;
   clicked_piece: number;
+  control_piece: boolean[][];
   final_piece: number;
 }
 
@@ -62,12 +59,13 @@ interface IBoardState {
   squares: Piece[][];
   onClick: (i: number) => void;
   clicked_piece: number;
+  control_piece: boolean[][];
   final_piece: number;
 }
 
 export class Board extends React.Component<IBoardProps, IBoardState> {
 
-  renderSquare(is_final: boolean, is_clicked: boolean, i: number) {
+  renderSquare(is_final: boolean, is_clicked: boolean, can_control: boolean, i: number) {
     let j = i - Setting.WHITE * 2;
     let x: number = Math.floor(j / Setting.LENGTH);
     let y: number = j % Setting.LENGTH;
@@ -79,6 +77,7 @@ export class Board extends React.Component<IBoardProps, IBoardState> {
         value={this.props.squares[x][y].out()}
         is_black={this.props.squares[x][y].turn()}
         is_captured={false}
+        can_control={can_control}
         onClick={() => this.props.onClick(i)}
       />
     );
@@ -87,14 +86,17 @@ export class Board extends React.Component<IBoardProps, IBoardState> {
   content(y: number){
     let content = [];
     for(let x = Setting.LENGTH - 1; x >= 0; --x){
-      if(x * Setting.LENGTH + y === this.props.final_piece - Setting.WHITE * 2){
-        content.push(this.renderSquare(true, false, x * Setting.LENGTH + y + Setting.WHITE * 2));
+      if(this.props.control_piece[x][y]){
+        content.push(this.renderSquare(false, false, true, x * Setting.LENGTH + y + Setting.WHITE * 2));
+      }
+      else if(x * Setting.LENGTH + y === this.props.final_piece - Setting.WHITE * 2){
+        content.push(this.renderSquare(true, false, false, x * Setting.LENGTH + y + Setting.WHITE * 2));
       }
       else if(x * Setting.LENGTH + y === this.props.clicked_piece - Setting.WHITE * 2){
-        content.push(this.renderSquare(false, true, x * Setting.LENGTH + y + Setting.WHITE * 2));
+        content.push(this.renderSquare(false, true, false, x * Setting.LENGTH + y + Setting.WHITE * 2));
       }
       else{
-        content.push(this.renderSquare(false, false, x * Setting.LENGTH + y + Setting.WHITE * 2));
+        content.push(this.renderSquare(false, false, false, x * Setting.LENGTH + y + Setting.WHITE * 2));
       }
     }
     return content;
@@ -134,32 +136,18 @@ interface ICapturedState {
 export class Captured extends React.Component<ICapturedProps, ICapturedState> {
 
   renderSquare(is_clicked: boolean, i: number) {
-    if(this.props.is_black){
-      return (
-        <Square
-          key={i}
-          is_final={false}
-          is_clicked={is_clicked}
-          value={Setting.PIECES[i]}
-          is_black={true}
-          is_captured={true}
-          onClick={() => this.props.onClick(i)}
-        />
-      );
-    }
-    else{
-      return (
-        <Square
-          key={i}
-          is_final={false}
-          is_clicked={is_clicked}
-          value={Setting.PIECES[i]}
-          is_black={false}
-          is_captured={true}
-          onClick={() => this.props.onClick(i + Setting.WHITE)}
-        />
-      );
-    }
+    return (
+      <Square
+        key={i}
+        is_final={false}
+        is_clicked={is_clicked}
+        value={Setting.PIECES[i]}
+        is_black={this.props.is_black}
+        is_captured={true}
+        can_control={false}
+        onClick={(this.props.is_black ? () => this.props.onClick(i) : () => this.props.onClick(i + Setting.WHITE))}
+      />
+    );
   }
 
   render() {

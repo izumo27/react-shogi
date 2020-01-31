@@ -1,5 +1,4 @@
 import React from 'react';
-// import ReactDOM from 'react-dom';
 import './index.css';
 import {Setting} from "./setting";
 import {Piece} from './pieces/piece';
@@ -14,6 +13,7 @@ import { King } from "./pieces/king";
 import { Mt } from "./pieces/mt";
 import {Board, Captured} from './board';
 import _ from 'lodash';
+import Confirm from './material/confirm'
 
 export function make_board(sfen="lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1", language='Ja'): Piece[][]{
   let squares: Piece[][] = [];
@@ -464,6 +464,8 @@ interface IGameProps {
   black_name: string;
   white_name: string;
   is_black: boolean;
+  moved_piece: number;
+  promotion: boolean;
 }
 
 interface IGameState {
@@ -495,6 +497,9 @@ interface IGameState {
   white_name: string;
   // 自分が先手かどうか
   is_black: boolean;
+  // 駒を成るときに使う移動先
+  moved_piece: number;
+  promotion: boolean;
 }
 
 export class Game extends React.Component<IGameProps, IGameState> {
@@ -517,7 +522,10 @@ export class Game extends React.Component<IGameProps, IGameState> {
       black_name: this.props.black_name,
       white_name: this.props.white_name,
       is_black: this.props.is_black,
+      moved_piece: this.props.moves,
+      promotion: this.props.promotion,
     };
+    this.handlePromotion = this.handlePromotion.bind(this);
   }
 
   handleClick(i: number){
@@ -693,15 +701,17 @@ export class Game extends React.Component<IGameProps, IGameState> {
         }
       }
       else if(num === 4){
-        if((turn ? y < 2 : y > Setting.LENGTH -1 - 2)){
+        if((turn ? y < 2 : y > Setting.LENGTH - 1 - 2)){
           tmp_pos[x][y].promote();
           is_promoted = true;
         }
       }
       if(!is_promoted){
-        if(window.confirm("成りますか？")) {
-          tmp_pos[x][y].promote();
-        }
+        this.setState({
+          moved_piece: i,
+          promotion: true,
+        });
+        return;
       }
     }
     this.setState({
@@ -748,6 +758,83 @@ export class Game extends React.Component<IGameProps, IGameState> {
       is_black: !this.state.is_black,
     });
     return;
+  }
+
+  handlePromotion(is_promoted: boolean){
+    // 正しい動きであることは保証されている
+    let clicked_piece: number = this.state.clicked_piece;
+    const turn = this.state.turn;
+    let tmp_pos = _.cloneDeep(this.state.current_pos);  // 動かした後の盤面
+    const current_black_piece = _.cloneDeep(this.state.current_black_piece);
+    const current_white_piece = _.cloneDeep(this.state.current_white_piece);
+    const moves = this.state.moves;
+    let tmp_black_piece = _.cloneDeep(current_black_piece);
+    let tmp_white_piece = _.cloneDeep(current_white_piece);
+    let xx: number = -1;
+    let yy: number = -1;
+    let i = this.state.moved_piece;
+    let x: number = Math.floor((i - Setting.WHITE * 2) / Setting.LENGTH);
+    let y: number = (i - Setting.WHITE * 2) % Setting.LENGTH;
+    // 持ち駒を掴んでいるとき
+    if(clicked_piece < Setting.WHITE * 2){
+      // 先手の駒を掴んでいる場合
+      if(turn){
+        // 持ち駒の更新
+        --tmp_black_piece[clicked_piece];
+         // 盤面の更新
+        tmp_pos[x][y] = set_piece(clicked_piece, turn);
+      }
+      else{
+        // 持ち駒の更新
+        --tmp_white_piece[clicked_piece - Setting.WHITE];
+         // 盤面の更新
+        tmp_pos[x][y] = set_piece(clicked_piece - Setting.WHITE, turn);
+      }
+    }
+    else{
+      // 持ち駒の分を引く
+      xx = Math.floor((clicked_piece - Setting.WHITE * 2) / Setting.LENGTH);
+      yy = (clicked_piece- Setting.WHITE * 2) % Setting.LENGTH;
+      let piece = tmp_pos[x][y];
+      // 盤面の更新
+      tmp_pos[x][y] = tmp_pos[xx][yy];
+      tmp_pos[xx][yy] = new Mt();
+      // 持ち駒の更新
+      let num: number = piece.piece_num();
+      if(num !== Setting.MT){
+        // 成っている駒を生に戻す
+        if(num > Setting.WHITE){
+          num -= Setting.MT / 2;
+        }
+        turn ? ++tmp_black_piece[num] : ++tmp_white_piece[num];
+      }
+    }
+    if(is_promoted){
+      tmp_pos[x][y].promote();
+    }
+    this.setState({
+      current_pos: tmp_pos,
+      current_black_piece: tmp_black_piece,
+      current_white_piece: tmp_white_piece,
+      control_piece: set_control_piece(),
+      turn: !turn,
+      moves: moves + 1,
+      moves_sub: moves + 1,
+      clicked_piece: Setting.UNCLICKED,
+      final_piece: i,
+      moved_piece: Setting.UNCLICKED,
+      promotion: false,
+    });
+    // 詰んでいたら対局終了
+    if(mate(tmp_pos, (turn ? tmp_white_piece : tmp_black_piece), !turn)){
+      setTimeout(() => {
+        alert(`まで${(moves + 1)}手にて${(turn ? this.state.black_name : this.state.white_name)}の勝ちです！`);
+      }, 200);
+      this.setState({
+        moves: -1,
+      });
+      return;
+    }
   }
 
   render() {
@@ -800,6 +887,13 @@ export class Game extends React.Component<IGameProps, IGameState> {
         <button className={"status"} onClick={() => this.resign()}>
           {"投了"}
         </button>
+        <Confirm
+          title={"成りますか？"}
+          message={""}
+          open={this.state.promotion}
+          handleYes={() => this.handlePromotion(true)}
+          handleNo={() => this.handlePromotion(false)}
+        />
       </div>
     );
   }

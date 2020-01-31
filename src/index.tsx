@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import {Setting} from "./setting";
 import {Game, make_board, set_kifu, set_pieces, set_control_piece} from './game';
-// import { Piece } from './pieces/piece';
 
 ReactDOM.render(
   <Game
@@ -23,6 +22,8 @@ ReactDOM.render(
     black_name={"先手"}
     white_name={"後手"}
     is_black={true}
+    moved_piece={Setting.UNCLICKED}
+    promotion={false}
   />,
   document.getElementById('root')
 );

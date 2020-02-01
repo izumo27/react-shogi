@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/react-shogi/static/css/main.54cd051c.chunk.css",
-    "main.js": "/react-shogi/static/js/main.c100bfdd.chunk.js",
-    "main.js.map": "/react-shogi/static/js/main.c100bfdd.chunk.js.map",
+    "main.js": "/react-shogi/static/js/main.dff86eb3.chunk.js",
+    "main.js.map": "/react-shogi/static/js/main.dff86eb3.chunk.js.map",
     "runtime-main.js": "/react-shogi/static/js/runtime-main.214ccd2c.js",
     "runtime-main.js.map": "/react-shogi/static/js/runtime-main.214ccd2c.js.map",
     "static/js/2.d78a1de7.chunk.js": "/react-shogi/static/js/2.d78a1de7.chunk.js",
     "static/js/2.d78a1de7.chunk.js.map": "/react-shogi/static/js/2.d78a1de7.chunk.js.map",
     "index.html": "/react-shogi/index.html",
-    "precache-manifest.a4bb18360ede59024a7969871ae8be50.js": "/react-shogi/precache-manifest.a4bb18360ede59024a7969871ae8be50.js",
+    "precache-manifest.11e8c07d739091e643ae701de31c47c8.js": "/react-shogi/precache-manifest.11e8c07d739091e643ae701de31c47c8.js",
     "service-worker.js": "/react-shogi/service-worker.js",
     "static/css/main.54cd051c.chunk.css.map": "/react-shogi/static/css/main.54cd051c.chunk.css.map",
     "static/js/2.d78a1de7.chunk.js.LICENSE": "/react-shogi/static/js/2.d78a1de7.chunk.js.LICENSE"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.214ccd2c.js",
     "static/js/2.d78a1de7.chunk.js",
     "static/css/main.54cd051c.chunk.css",
-    "static/js/main.c100bfdd.chunk.js"
+    "static/js/main.dff86eb3.chunk.js"
   ]
 }

@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/react-shogi/static/css/main.9b1509fb.chunk.css",
-    "main.js": "/react-shogi/static/js/main.44ac47c7.chunk.js",
-    "main.js.map": "/react-shogi/static/js/main.44ac47c7.chunk.js.map",
+    "main.css": "/react-shogi/static/css/main.54cd051c.chunk.css",
+    "main.js": "/react-shogi/static/js/main.6a9d89c5.chunk.js",
+    "main.js.map": "/react-shogi/static/js/main.6a9d89c5.chunk.js.map",
     "runtime-main.js": "/react-shogi/static/js/runtime-main.214ccd2c.js",
     "runtime-main.js.map": "/react-shogi/static/js/runtime-main.214ccd2c.js.map",
-    "static/js/2.0ee2441d.chunk.js": "/react-shogi/static/js/2.0ee2441d.chunk.js",
-    "static/js/2.0ee2441d.chunk.js.map": "/react-shogi/static/js/2.0ee2441d.chunk.js.map",
+    "static/js/2.d78a1de7.chunk.js": "/react-shogi/static/js/2.d78a1de7.chunk.js",
+    "static/js/2.d78a1de7.chunk.js.map": "/react-shogi/static/js/2.d78a1de7.chunk.js.map",
     "index.html": "/react-shogi/index.html",
-    "precache-manifest.e4b167330c54852f38e1bf07e050d7c3.js": "/react-shogi/precache-manifest.e4b167330c54852f38e1bf07e050d7c3.js",
+    "precache-manifest.54b0c4747766a86bfac22fb6416a18d6.js": "/react-shogi/precache-manifest.54b0c4747766a86bfac22fb6416a18d6.js",
     "service-worker.js": "/react-shogi/service-worker.js",
-    "static/css/main.9b1509fb.chunk.css.map": "/react-shogi/static/css/main.9b1509fb.chunk.css.map",
-    "static/js/2.0ee2441d.chunk.js.LICENSE": "/react-shogi/static/js/2.0ee2441d.chunk.js.LICENSE"
+    "static/css/main.54cd051c.chunk.css.map": "/react-shogi/static/css/main.54cd051c.chunk.css.map",
+    "static/js/2.d78a1de7.chunk.js.LICENSE": "/react-shogi/static/js/2.d78a1de7.chunk.js.LICENSE"
   },
   "entrypoints": [
     "static/js/runtime-main.214ccd2c.js",
-    "static/js/2.0ee2441d.chunk.js",
-    "static/css/main.9b1509fb.chunk.css",
-    "static/js/main.44ac47c7.chunk.js"
+    "static/js/2.d78a1de7.chunk.js",
+    "static/css/main.54cd051c.chunk.css",
+    "static/js/main.6a9d89c5.chunk.js"
   ]
 }

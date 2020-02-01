@@ -14,6 +14,8 @@ import { Mt } from "./pieces/mt";
 import {Board, Captured} from './board';
 import _ from 'lodash';
 import Confirm from './material/confirm'
+import Alert from './material/alert'
+import Button from '@material-ui/core/Button';
 
 export function make_board(sfen="lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1", language='Ja'): Piece[][]{
   let squares: Piece[][] = [];
@@ -466,6 +468,8 @@ interface IGameProps {
   is_black: boolean;
   moved_piece: number;
   promotion: boolean;
+  resign: boolean;
+  result: boolean;
 }
 
 interface IGameState {
@@ -500,6 +504,10 @@ interface IGameState {
   // 駒を成るときに使う移動先
   moved_piece: number;
   promotion: boolean;
+  // 投了メッセージを表示するか
+  resign: boolean;
+  // 結果メッセージ
+  result: boolean;
 }
 
 export class Game extends React.Component<IGameProps, IGameState> {
@@ -524,8 +532,12 @@ export class Game extends React.Component<IGameProps, IGameState> {
       is_black: this.props.is_black,
       moved_piece: this.props.moves,
       promotion: this.props.promotion,
+      resign: this.props.resign,
+      result: this.props.result,
     };
     this.handlePromotion = this.handlePromotion.bind(this);
+    this.handleResign= this.handleResign.bind(this);
+    this.handleResultClose = this.handleResultClose.bind(this);
   }
 
   handleClick(i: number){
@@ -742,20 +754,16 @@ export class Game extends React.Component<IGameProps, IGameState> {
     if(moves < 0){
       return;
     }
-    if(window.confirm("投了しますか？")) {
-      setTimeout(() => {
-        alert(`まで${(moves)}手にて${(this.state.turn ? this.state.white_name : this.state.black_name)}の勝ちです！`);
-      }, 200);
-      this.setState({
-        moves: -1,
-      });
-      return;
-    }
+    this.setState({
+      resign: true,
+    });
   }
 
   rotate(){
     this.setState({
       is_black: !this.state.is_black,
+      clicked_piece: Setting.UNCLICKED,
+      control_piece: set_control_piece(),
     });
     return;
   }
@@ -828,13 +836,43 @@ export class Game extends React.Component<IGameProps, IGameState> {
     // 詰んでいたら対局終了
     if(mate(tmp_pos, (turn ? tmp_white_piece : tmp_black_piece), !turn)){
       setTimeout(() => {
-        alert(`まで${(moves + 1)}手にて${(turn ? this.state.black_name : this.state.white_name)}の勝ちです！`);
+        this.setState({
+          result: true,
+        });
       }, 200);
       this.setState({
         moves: -1,
+        moves_sub: moves + 1,
       });
       return;
     }
+  }
+
+  handleResign(resign: boolean){
+    if(resign){
+      setTimeout(() => {
+        this.setState({
+          result: true,
+        });
+      }, 200);
+      this.setState({
+        moves: -1,
+        clicked_piece: Setting.UNCLICKED,
+        control_piece: set_control_piece(),
+        resign: false,
+      });
+    }
+    else{
+      this.setState({
+        resign: false,
+      });
+    }
+  }
+
+  handleResultClose(){
+    this.setState({
+      result: false,
+    });
   }
 
   render() {
@@ -842,12 +880,13 @@ export class Game extends React.Component<IGameProps, IGameState> {
     if(!this.state.is_black){
       game += " white";
     }
-    let moves = this.state.moves_sub;
+    const moves = this.state.moves_sub;
+    const legend = (this.state.is_black ? `△${this.state.white_name}　${moves}手目　▲${this.state.black_name}` : `▲${this.state.black_name}　${moves}手目　△${this.state.white_name}`)
     return (
       <div className="game-info">
         <div className="game">
           <div className="center bold">
-            {`△${this.state.white_name}　${moves}手目　▲${this.state.black_name}`}
+            {legend}
           </div>
           <div className={game}>
             <div className="game-info-white white">
@@ -881,18 +920,32 @@ export class Game extends React.Component<IGameProps, IGameState> {
             </div>
           </div>
         </div>
-        <button className={"status"} onClick={() => this.rotate()} >
-          {"反転"}
-        </button>
-        <button className={"status"} onClick={() => this.resign()}>
-          {"投了"}
-        </button>
+        <Button className={"status"} variant="contained" color="primary" onClick={() => this.rotate()} >
+          反転
+        </Button>
+        &nbsp;
+        <Button className={"status"} variant="contained" color="secondary" onClick={() => this.resign()}>
+          投了
+        </Button>
         <Confirm
           title={"成りますか？"}
           message={""}
           open={this.state.promotion}
           handleYes={() => this.handlePromotion(true)}
           handleNo={() => this.handlePromotion(false)}
+        />
+        <Confirm
+          title={"投了しますか？"}
+          message={""}
+          open={this.state.resign}
+          handleYes={() => this.handleResign(true)}
+          handleNo={() => this.handleResign(false)}
+        />
+        <Alert
+          title={`まで${moves}手にて${(this.state.turn ? this.state.white_name : this.state.black_name)}の勝ちです！`}
+          message={""}
+          open={this.state.result}
+          handleClose={this.handleResultClose}
         />
       </div>
     );

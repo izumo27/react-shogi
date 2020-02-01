@@ -24,6 +24,8 @@ ReactDOM.render(
     is_black={true}
     moved_piece={Setting.UNCLICKED}
     promotion={false}
+    resign={false}
+    result={false}
   />,
   document.getElementById('root')
 );

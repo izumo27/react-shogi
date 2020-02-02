@@ -88,8 +88,12 @@ ol, ul {
 .game{
   display: flex;
   flex-direction: column;
-  font-size: 30px;
+  font-size: 25px;
   /* justify-content: center; */
+}
+
+.space{
+  margin-top: 10px;
 }
 
 .game-info {

@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "02ee4de404e804996f5227753b975eb9",
+    "revision": "9c1fb531e93693c0c7b768d32f2a245f",
     "url": "/react-shogi/index.html"
   },
   {
-    "revision": "6926c730ef16d27bafc6",
+    "revision": "3d0338e5a09c1f17638b",
     "url": "/react-shogi/static/css/main.fc2dfe77.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/react-shogi/static/js/2.9e13eabc.chunk.js.LICENSE"
   },
   {
-    "revision": "6926c730ef16d27bafc6",
-    "url": "/react-shogi/static/js/main.d83ad25f.chunk.js"
+    "revision": "3d0338e5a09c1f17638b",
+    "url": "/react-shogi/static/js/main.9c7d41c1.chunk.js"
   },
   {
     "revision": "6c0a3ea63176cb89fb5d",

@@ -1,11 +1,25 @@
 body {
   font: 24px "Century Gothic", Futura, sans-serif;
   margin: 20px;
-  min-width: 720px;
+  max-width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    margin: 3vw;
+  }
 }
 
 ol, ul {
   padding-left: 0px;
+}
+
+*, *:before, *:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box
 }
 
 .board-row:after {
@@ -51,40 +65,6 @@ ol, ul {
   width: 46px;
 }
 
-.piece{
-  background: rgb(243, 194, 129);
-}
-
-.final{
-  background: #BB8E5F;
-}
-
-.white{
-  transform: rotate(180deg);
-}
-
-.click{
-  background: rgb(240, 211, 175);
-}
-
-.attack{
-  background: rgb(224, 161, 90);
-}
-
-.square:focus {
-  outline: none;
-}
-
-.kbd-navigation .square:focus {
-  background: #ddd;
-}
-
-.center{
-  justify-content: center;
-  text-align: center;
-  font-weight: bold;
-}
-
 .game{
   display: flex;
   flex-direction: column;
@@ -92,14 +72,34 @@ ol, ul {
   /* justify-content: center; */
 }
 
-.space{
-  margin-top: 10px;
+.game-sub{
+  display: flex;
+  flex-direction: column;
+  font-size: 30px;
+  margin-left: 20px;
+  /* justify-content: center; */
 }
 
 .game-info {
   display: flex;
   flex-direction: row;
   /* justify-content: center; */
+}
+
+.button {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  min-width: 160px;
+  /* justify-content: flex-end; */
+}
+
+.mobile-button {
+  display: flex;
+  flex-direction: row;
+  margin-top: 2vw;
+  /* min-width: 180px; */
+  justify-content: flex-end;
 }
 
 .game-info-black {
@@ -116,6 +116,18 @@ ol, ul {
   line-height: 34px;
 }
 
+.game-board{
+  min-width: 410px;
+}
+
+.space{
+  margin-top: 10px;
+}
+
+.title{
+  justify-content: flex-start;
+}
+
 .number{
   margin-left: -2px;
   background: white;
@@ -128,4 +140,99 @@ ol, ul {
   padding: 0;
   text-align: center;
   width: 30px;
+}
+
+.mobile-square {
+  border: 1px solid black;
+  float: left;
+  font-size: 5vw;
+  font-weight: bold;
+  line-height: 5vw;
+  height: 9.6vw;
+  margin-right: -1px;
+  /* margin-left: -1px; */
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 8.5vw;
+}
+
+.mobile-game-info-black {
+  margin-left: 4vw;
+  font-size: 5vw;
+  font-weight: bold;
+  line-height: 5vw;
+}
+
+.mobile-game-info-white {
+  margin-right: 4vw;
+  font-size: 5vw;
+  font-weight: bold;
+  line-height: 5vw;
+}
+
+/* 持ち駒 */
+.mobile-captured{
+  border: 0.2vw solid white;
+  background: white;
+  margin-left: -1vw;
+  float: left;
+  font-size: 5vw;
+  font-weight: bold;
+  line-height: 6vw;
+  height: 6vw;
+  margin-right: -1vw;
+  /* margin-top: -1.5vw; */
+  padding: 0;
+  text-align: center;
+  width: 7vw;
+}
+
+.mobile-number{
+  margin-left: -0.2vw;
+  background: white;
+  border: 0.2vw solid white;
+  font-size: 5vw;
+  font-weight: bold;
+  line-height: 5vw;
+  height: 5vw;
+  margin-top: -0.5vw;
+  padding: 0;
+  text-align: center;
+  width: 5vw;
+}
+
+
+.piece{
+  background: rgb(243, 194, 129);
+}
+
+.final{
+  background: #BB8E5F;
+}
+
+.white{
+  transform: rotate(180deg);
+}
+
+.attack{
+  background: rgb(240, 211, 175);
+}
+
+.square:focus {
+  outline: none;
+}
+
+.kbd-navigation .square:focus {
+  background: #ddd;
+}
+
+.center{
+  justify-content: center;
+  text-align: center;
+  font-weight: bold;
+}
+
+.click{
+  background: rgb(224, 161, 90);
 }

@@ -4,6 +4,9 @@ import './index.css';
 import {Setting} from "./setting";
 import {Game, make_board, set_kifu, set_pieces, set_control_piece} from './game';
 
+const ua = navigator.userAgent.toLowerCase();
+const is_mobile = (ua.match(/Mobile/) !== null) || (ua.match(/mobile/) !== null);
+
 ReactDOM.render(
   <Game
     start_pos={make_board()}
@@ -27,6 +30,7 @@ ReactDOM.render(
     promotion={false}
     resign={false}
     result={false}
+    is_mobile={is_mobile}
   />,
   document.getElementById('root')
 );

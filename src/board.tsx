@@ -15,15 +15,16 @@ interface ISquareProps{
   is_captured: boolean;
   can_control: boolean;
   onClick: () => void;
+  is_mobile: boolean;
 }
 
 function Square(props: ISquareProps){
   let class_string: string = "";
   if(props.is_captured){
-    class_string = "captured";
+    class_string = (props.is_mobile ? "mobile-captured" : "captured");
   }
   else{
-    class_string = "square piece";
+    class_string = (props.is_mobile ? "mobile-square piece" : "square piece");
     if(!props.is_black){
       class_string = class_string + " white";
     }
@@ -53,6 +54,7 @@ interface IBoardProps {
   clicked_piece: number;
   control_piece: boolean[][];
   final_piece: number;
+  is_mobile: boolean;
 }
 
 interface IBoardState {
@@ -79,6 +81,7 @@ export class Board extends React.Component<IBoardProps, IBoardState> {
         is_captured={false}
         can_control={can_control}
         onClick={() => this.props.onClick(i)}
+        is_mobile={this.props.is_mobile}
       />
     );
   }
@@ -123,6 +126,7 @@ interface ICapturedProps {
   is_black: boolean;
   turn: boolean;
   onClick: (i: number) => void;
+  is_mobile: boolean;
 }
 
 interface ICapturedState {
@@ -146,6 +150,7 @@ export class Captured extends React.Component<ICapturedProps, ICapturedState> {
         is_captured={true}
         can_control={false}
         onClick={(this.props.is_black ? () => this.props.onClick(i) : () => this.props.onClick(i + Setting.WHITE))}
+        is_mobile={this.props.is_mobile}
       />
     );
   }

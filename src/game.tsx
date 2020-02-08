@@ -381,6 +381,7 @@ function mate(pos: Piece[][], captured: number[], turn: boolean): boolean{
       if(tmp_controls[atcx][atcy]){
         // 取ったときに王手がかかっていなければ詰んでいない
         tmp_pos[atcx][atcy] = tmp_pos[i][j];
+        tmp_pos[i][j]=new Mt();
         if(!check(tmp_pos, turn, x, y)){
           return false;
         }
@@ -403,6 +404,7 @@ function mate(pos: Piece[][], captured: number[], turn: boolean): boolean{
           // 移動合いできるか
           if(tmp_controls[xx][yy] > 0){
             tmp_pos[xx][yy] = tmp_pos[i][j];
+            tmp_pos[i][j]=new Mt();
             // 王手がかかっていなければ詰んでいない
             if(!check(tmp_pos, turn, x, y)){
               return false;
@@ -516,6 +518,7 @@ interface IGameProps {
   promotion: boolean;
   resign: boolean;
   result: boolean;
+  is_mobile: boolean;
 }
 
 interface IGameState {
@@ -556,6 +559,8 @@ interface IGameState {
   resign: boolean;
   // 結果メッセージ
   result: boolean;
+  // スマホかどうか
+  is_mobile: boolean;
 }
 
 export class Game extends React.Component<IGameProps, IGameState> {
@@ -583,6 +588,7 @@ export class Game extends React.Component<IGameProps, IGameState> {
       promotion: this.props.promotion,
       resign: this.props.resign,
       result: this.props.result,
+      is_mobile: this.props.is_mobile,
     };
     this.handlePromotion = this.handlePromotion.bind(this);
     this.handleResign= this.handleResign.bind(this);
@@ -1035,42 +1041,149 @@ export class Game extends React.Component<IGameProps, IGameState> {
     }
     const moves = this.state.moves_sub;
     const legend = (this.state.is_black ? `△${this.state.white_name}　▲${this.state.black_name}` : `▲${this.state.black_name}　△${this.state.white_name}`);
+    const moves_max = this.state.moves_max;
+
+    const is_mobile = this.state.is_mobile;
+
+    const font_size = (is_mobile ? 'small' : 'large');
+    const button_size = (is_mobile ? 'small' : 'medium');
+
     const back10 = (this.state.moves === -1 && moves > 0 ?
       <Button variant="contained" onClick={() => this.setBoard(moves - 10)}>
-        <Replay10OutlinedIcon fontSize='large'/>
+        <Replay10OutlinedIcon fontSize={font_size}/>
       </Button>
       :
       <Button variant="contained" disabled onClick={() => this.setBoard(moves - 10)}>
-        <Replay10OutlinedIcon fontSize='large'/>
+        <Replay10OutlinedIcon fontSize={font_size}/>
       </Button>
       );
     const back1 = (this.state.moves === -1 && moves > 0 ?
       <Button variant="contained" onClick={() => this.setBoard(moves - 1)}>
-        <ArrowBackIosIcon fontSize='large'/>
+        <ArrowBackIosIcon fontSize={font_size}/>
       </Button>
       :
       <Button variant="contained" disabled onClick={() => this.setBoard(moves - 1)}>
-        <ArrowBackIosIcon fontSize='large'/>
+        <ArrowBackIosIcon fontSize={font_size}/>
       </Button>
       );
     const forward1 = (this.state.moves === -1 && moves < this.state.moves_max ?
       <Button variant="contained" onClick={() => this.setBoard(moves + 1)}>
-        <ArrowForwardIosIcon fontSize='large'/>
+        <ArrowForwardIosIcon fontSize={font_size}/>
       </Button>
       :
       <Button variant="contained" disabled onClick={() => this.setBoard(moves + 1)}>
-        <ArrowForwardIosIcon fontSize='large'/>
+        <ArrowForwardIosIcon fontSize={font_size}/>
       </Button>
       );
     const forwad10 = (this.state.moves === -1 && moves < this.state.moves_max ?
       <Button variant="contained" onClick={() => this.setBoard(moves + 10)}>
-        <Forward10OutlinedIcon fontSize='large'/>
+        <Forward10OutlinedIcon fontSize={font_size}/>
       </Button>
       :
       <Button variant="contained" disabled onClick={() => this.setBoard(moves + 10)}>
-        <Forward10OutlinedIcon fontSize='large'/>
+        <Forward10OutlinedIcon fontSize={font_size}/>
       </Button>
     );
+    if(is_mobile){
+      return (
+        <div className="game-info">
+          <div className="game">
+            <div className="game-sub">
+            {this.state.moves >= 0 &&
+              <div className="mobile-button">
+                <Button variant="contained" color="secondary" size={button_size} onClick={() => this.resign()}>
+                  投了
+                </Button>
+              </div>
+            }
+              <div className="mobile-button">
+                <Button variant="contained" color="primary" size={button_size} onClick={() => this.rotate()} >
+                  反転
+                </Button>
+              </div>
+            </div>
+            {this.state.moves === -1 && moves_max > 0 &&
+              <div className="mobile-button">
+                <Button variant="contained" size={button_size} color="inherit" onClick={() => this.setBoard(0)}>
+                  開始局面
+                </Button>
+              </div>
+            }
+            {this.state.moves === -1 && moves_max > 0 &&
+              <div className="mobile-button">
+                <Button variant="contained" size={button_size} color="inherit" onClick={() => this.setBoard(moves_max)}>
+                  終局図
+                </Button>
+              </div>
+            }
+            <div className="center bold">
+              {legend}
+            </div>
+            <div className="center">
+              {back1}
+              &nbsp;
+              {moves}手目
+              &nbsp;
+              {forward1}
+            </div>
+            <div className={game}>
+              <div className="mobile-game-info-white white">
+                <div>{"△"}</div>
+                <Captured
+                  squares={this.state.current_white_piece}
+                  clicked_piece={this.state.clicked_piece}
+                  is_black={false}
+                  turn={this.state.turn}
+                  onClick={i => this.handleClick(i)}
+                  is_mobile={is_mobile}
+                />
+              </div>
+              <div>
+                <Board
+                  squares={this.state.current_pos}
+                  onClick={i => this.handleClick(i)}
+                  clicked_piece={this.state.clicked_piece}
+                  control_piece={this.state.control_piece}
+                  final_piece={this.state.final_piece}
+                  is_mobile={is_mobile}
+                />
+              </div>
+              <div className="mobile-game-info-black">
+                <div>{"▲"}</div>
+                <Captured
+                  squares={this.state.current_black_piece}
+                  clicked_piece={this.state.clicked_piece}
+                  is_black={true}
+                  turn={this.state.turn}
+                  onClick={i => this.handleClick(i)}
+                  is_mobile={is_mobile}
+                />
+              </div>
+            </div>
+          </div>
+          <Confirm
+            title={"成りますか？"}
+            message={""}
+            open={this.state.promotion}
+            handleYes={() => this.handlePromotion(true)}
+            handleNo={() => this.handlePromotion(false)}
+          />
+          <Confirm
+            title={"投了しますか？"}
+            message={""}
+            open={this.state.resign}
+            handleYes={() => this.handleResign(true)}
+            handleNo={() => this.handleResign(false)}
+          />
+          <Alert
+            title={`まで${moves}手にて${(this.state.turn ? this.state.white_name : this.state.black_name)}の勝ちです！`}
+            message={""}
+            open={this.state.result}
+            handleClose={this.handleResultClose}
+          />
+        </div>
+      );
+    }
     return (
       <div className="game-info">
         <div className="game">
@@ -1097,6 +1210,7 @@ export class Game extends React.Component<IGameProps, IGameState> {
                 is_black={false}
                 turn={this.state.turn}
                 onClick={i => this.handleClick(i)}
+                is_mobile={is_mobile}
               />
             </div>
             <div className="game-board">
@@ -1106,6 +1220,7 @@ export class Game extends React.Component<IGameProps, IGameState> {
                 clicked_piece={this.state.clicked_piece}
                 control_piece={this.state.control_piece}
                 final_piece={this.state.final_piece}
+                is_mobile={is_mobile}
               />
             </div>
             <div className="game-info-black">
@@ -1116,17 +1231,39 @@ export class Game extends React.Component<IGameProps, IGameState> {
                 is_black={true}
                 turn={this.state.turn}
                 onClick={i => this.handleClick(i)}
+                is_mobile={is_mobile}
               />
             </div>
           </div>
         </div>
-        <Button className={"status"} variant="contained" color="primary" onClick={() => this.rotate()} >
-          反転
-        </Button>
-        &nbsp;
-        <Button className={"status"} variant="contained" color="secondary" onClick={() => this.resign()}>
-          投了
-        </Button>
+        <div className="game-sub">
+          {this.state.moves >= 0 &&
+            <div className="button">
+              <Button variant="contained" color="secondary" size={button_size} onClick={() => this.resign()}>
+                投了
+              </Button>
+            </div>
+          }
+          <div className="button">
+            <Button variant="contained" color="primary" size={button_size} onClick={() => this.rotate()} >
+              反転
+            </Button>
+          </div>
+          {this.state.moves === -1 && moves_max > 0 &&
+            <div className="button">
+              <Button variant="contained" size={button_size} color="inherit" onClick={() => this.setBoard(0)}>
+                開始局面
+              </Button>
+            </div>
+          }
+          {this.state.moves === -1 && moves_max > 0 &&
+            <div className="button">
+              <Button variant="contained" size={button_size} color="inherit" onClick={() => this.setBoard(moves_max)}>
+                終局図
+              </Button>
+            </div>
+          }
+        </div>
         <Confirm
           title={"成りますか？"}
           message={""}
